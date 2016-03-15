@@ -51,7 +51,6 @@ def similarity(articleone, articletwo):
   visim = setsim(articleone['video_ids'], articletwo['video_ids'])
   tisim = timesim(articleone['time_created'], articletwo['time_created'])
   sim_vec = [nesim, imsim, visim, tisim]
-  print(sim_vec)
   return sum(sim_vec)
 
 
@@ -66,10 +65,31 @@ def compare(featureslist):
 def matches(articlefile, threshold):
   featureslist = json.load(open(articlefile, 'r'))
   comparison_res = compare(featureslist)
-  matches = []
+  matches = {}
   for sim, cp in comparison_res:
     if sim > threshold:
-      matches.append((cp[0]['uri'], cp[1]['uri']))
+      ur1 = cp[0]['uri']
+      ur2 = cp[1]['uri']
+      l1 = cp[0]['lang']
+      l2 = cp[1]['lang']
+
+      if ur1 in matches:
+        p2 = {'lang':l2, 'uri':ur2}
+        matches[ur1].append(p2)
+      else:
+        matches[ur1] = [p2]
+
+      if ur2 in matches:
+        p1 = {'lang':l1, 'uri':ur1}
+        matches[ur2].append(p1)
+      else:
+        matches[ur2] = [p1]
+
   return matches
 
-matches('rereout.json', 0.9)
+def output(matches, filename):
+  json.dump(matches, open(filename,'w'))
+
+m = matches('rereout.json', 0.9)
+
+output(m, 'thing.json')
