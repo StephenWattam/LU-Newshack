@@ -25,7 +25,10 @@ def anysim(dict1, dict2):
     for a in list_of_matches:
         sum_of_correct += a[0]
         sum_of_len += a[1]
-    return float(sum_of_correct)/float(sum_of_len)
+    if sum_of_len == 0:
+        return 0.0
+    else:
+        return float(sum_of_correct)/float(sum_of_len)
 
 def compare_all_lists(list1, list2):
     len1 = len(list1)
