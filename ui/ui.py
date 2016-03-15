@@ -29,13 +29,8 @@ def go():
     if re.match('^https?:\/\/www\.bbc\.co\.uk\/', uri):
         str = str[20:-1]
 
-    # Find the article pointed at by the URL given
-    article = None
-    for language, categories in articles.items():
-        for category, article_list in categories.items():
-            for aid, art in article_list.items():
-                if aid == uri:
-                    article = art
+    # Find the article if you csn
+    article = search.find_article_in_list(articles, uri)
 
     # Check we found something
     if not article:
@@ -47,15 +42,18 @@ def go():
         return render_template('missing.html', uri = uri, explanation = 'We can\'t find any matches for that article.')
 
     languages = {}
+    languages[article["language"]] = (article["assetUri"], 1.0, article)
     for language, sorted_list in ranked_similarities.items():
-        languages[language] = sorted_list[0]
+        articleuri, sim = sorted_list[0]
+        languages[language] = (articleuri, sim, search.find_article_in_list(articles, articleuri))
 
+    print("=> ", languages)
     return render_template('results.html', uri = uri, articles = languages)
 
 # Entry point
 if __name__ == '__main__':
     if not (len(sys.argv) == 3):
-        print("ARGS: ARTICLE_JSON ARTICLE_SIMILARITY")
+        print("ARGS: ARTICLE_JSON SIMILARITY_JSON")
         sys.exit(1)
    
     print("Loading articles from: ", sys.argv[1]);

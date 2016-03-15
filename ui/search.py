@@ -22,3 +22,18 @@ def search_for_similar_uris(similarities, uri):
         sorted_language_dict[lang] = sorted_list
 
     return sorted_language_dict
+
+
+# Find the article pointed at by the URL given
+def find_article_in_list(articles, uri):
+    article = None
+    
+    for language, categories in articles.items():
+        for category, article_list in categories.items():
+            for aid, art in article_list.items():
+                if aid == uri:
+                    article = art
+
+    return article
+
+
