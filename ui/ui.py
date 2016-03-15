@@ -1,5 +1,7 @@
 from flask import Flask, render_template
 from flask import request
+import search 
+import json
 
 import sys
 
@@ -28,7 +30,16 @@ if __name__ == '__main__':
     if not (len(sys.argv) == 3):
         print("ARGS: ARTICLE_JSON ARTICLE_SIMILARITY")
         sys.exit(1)
-    
-    # TODO: load similarity search system
+   
+    print("Loading articles from: ", sys.argv[1]);
+    f = open(sys.argv[1])
+    articles = json.loads(f.read())
+    f.close()
+    print("Done.")
+    print("Loading similarity results from: ", sys.argv[2]);
+    f = open(sys.argv[2])
+    similarities = json.loads(f.read())
+    f.close()
+    print("Done.")
 
     app.run(debug=True)
