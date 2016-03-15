@@ -65,6 +65,10 @@ def slashTags_parse_entities(tagged_text):
 
 
 def process(rawfilename, outfilename):
+  """ Extract desired features from the output file
+  produced by the download/translate process, and
+  output to a different JSON file. """
+
   rawdata = json.load(open(rawfilename, 'r'))
   of = open(outfilename, 'w')
   featurevector = []
@@ -73,9 +77,6 @@ def process(rawfilename, outfilename):
   for lang in languages:
     for cat in languages[lang]:
       for uri in languages[lang][cat]:
-          print(lang)
-          print(cat)
-          print(uri)
           result = languages[lang][cat][uri]
           if not result or not 'summary' in result:
             continue
@@ -91,16 +92,21 @@ def process(rawfilename, outfilename):
                   imgdata = result['media']['images'][key][iid]
                   if 'altText' in imgdata:
                     text += imgdata['altText']
-                imgids += iids
+                  if 'href' in imgdata:
+                    imgids.append(imgdata['href'])
 
             if 'videos' in result['media']:
               for key in result['media']['videos']:
                 vids = result['media']['videos'][key].keys()
                 for vid in vids:
                   viddata = result['media']['videos'][key][vid]
-                  if 'image' in viddata and 'altText' in viddata['image']:
-                    text += viddata['image']['altText']
-                vidids += vids
+                  if 'href' in viddata:
+                      vidids.append(viddata['href'])
+                  if 'image' in viddata:
+                    if 'altText' in viddata['image']:
+                      text += viddata['image']['altText']
+                    if 'href' in viddata['image']:
+                      vidids.append(viddata['image']['href'])
 
             
           nes =  getEntities(text)
@@ -109,8 +115,8 @@ def process(rawfilename, outfilename):
             "lang" : lang, 
             "named_entities": nes,
             "time_created": time,
-            "image_ids" : imgids,
-            "video_ids" : vidids 
+            "image_ids" : list(set(imgids)),
+            "video_ids" : list(set(vidids))
           }
           featurevector += [fmap]
 
