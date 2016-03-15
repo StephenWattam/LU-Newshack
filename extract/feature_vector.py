@@ -3,11 +3,6 @@ import json
 
 PORT=1234
 HOST='localhost'
-claimedomains = ['facebook.com','twitter.com','gplus.com','linkedin.com']
-webextensions = ['','.html','.php','.aspx']
-knownpeoplemaps = {}
-PHONE_REGEX='0[0-9 ]{9,}'
-EMAIL_REGEX='[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}'
 
 @staticmethod
 def makePageName(path):
@@ -73,34 +68,51 @@ def process(rawfilename, outfilename):
   rawdata = json.load(open(rawfilename, 'r'))
   of = open(outfilename, 'w')
   featurevector = []
-  results = rawdata['results']
 
-  for result in results:
-    text = result['summary']
-    time = result['firstCreated']
-    vidids = []
-    imgids = []
-    for key in result['media']['images']:
-      iids = result['media']['images'][key].keys()
-      for iid in iids:
-        text += result['media']['images'][key][iid]['altText']
-      imgids += iids
+  languages = rawdata
+  for lang in languages:
+    for cat in languages[lang]:
+      for uri in languages[lang][cat]:
+          print(lang)
+          print(cat)
+          print(uri)
+          result = languages[lang][cat][uri]
+          if not result or not 'summary' in result:
+            continue
+          text = result['summary']
+          time = result['firstCreated']
+          vidids = []
+          imgids = []
+          if 'media' in result:
+            if 'images' in result['media']:
+              for key in result['media']['images']:
+                iids = result['media']['images'][key].keys()
+                for iid in iids:
+                  imgdata = result['media']['images'][key][iid]
+                  if 'altText' in imgdata:
+                    text += imgdata['altText']
+                imgids += iids
 
-    for key in result['media']['videos']:
-      vids = result['media']['videos'][key].keys()
-      for vid in vids:
-        text += result['media']['videos'][key][vid]['image']['altText']
-      vidids += vids
+            if 'videos' in result['media']:
+              for key in result['media']['videos']:
+                vids = result['media']['videos'][key].keys()
+                for vid in vids:
+                  viddata = result['media']['videos'][key][vid]
+                  if 'image' in viddata and 'altText' in viddata['image']:
+                    text += viddata['image']['altText']
+                vidids += vids
 
-      
-    nes =  getEntities(text)
-    fmap = {
-      "named_entities": nes,
-      "time_created": time,
-      "image_ids" : imgids,
-      "video_ids" : vidids 
-    }
-    featurevector += [fmap]
+            
+          nes =  getEntities(text)
+          fmap = {
+            "uri" : uri,
+            "lang" : lang, 
+            "named_entities": nes,
+            "time_created": time,
+            "image_ids" : imgids,
+            "video_ids" : vidids 
+          }
+          featurevector += [fmap]
 
   json.dump(featurevector, of)
 
