@@ -73,14 +73,14 @@ def matches(articlefile, threshold):
       l1 = cp[0]['lang']
       l2 = cp[1]['lang']
 
+      p2 = {'lang':l2, 'uri':ur2, 'sim':sim}
       if ur1 in matches:
-        p2 = {'lang':l2, 'uri':ur2}
         matches[ur1].append(p2)
       else:
         matches[ur1] = [p2]
 
+      p1 = {'lang':l1, 'uri':ur1, 'sim':sim}
       if ur2 in matches:
-        p1 = {'lang':l1, 'uri':ur1}
         matches[ur2].append(p1)
       else:
         matches[ur2] = [p1]
