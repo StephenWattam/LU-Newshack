@@ -25,9 +25,9 @@
       <div class="page-header-banner">
 
         <!-- input for launching the lookup -->
-        <form action="/" method="get">
+        <form action="/login" method="Get">
           <div class="input-group">
-            <input type="text" class="form-control" placeholder="Lookup URL...">
+            <input type="text" class="form-control" placeholder="Lookup URL..." id='url'>
             <span class="input-group-btn">
               <button class="btn btn-default" type="submit">Go!</button>
             </span>
@@ -42,7 +42,7 @@
     {% for message in get_flashed_messages() %}
       <div class="alert alert-info" role="alert">{{message}}</div>
     {% endfor %}
-  
+
 
     <div class="body">
 
