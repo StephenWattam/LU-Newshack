@@ -1,4 +1,5 @@
 import json
+import anysim
 import time
 import datetime
 import itertools
@@ -45,8 +46,7 @@ def get_candidate_pairs(featurelist):
 
 #Similarity Sum (simple standard method for thresholding)
 def similarity(articleone, articletwo):
-#  nesim = nesim(articleone['named_entities'], articletwo['named_entities'])
-  nesim = 0
+  nesim = anysim.anysim(articleone['named_entities'], articletwo['named_entities'])
   imsim = setsim(articleone['image_ids'], articletwo['image_ids'])
   visim = setsim(articleone['video_ids'], articletwo['video_ids'])
   tisim = timesim(articleone['time_created'], articletwo['time_created'])
@@ -72,4 +72,4 @@ def matches(articlefile, threshold):
       matches.append((cp[0]['uri'], cp[1]['uri']))
   return matches
 
-
+matches('rereout.json', 0.9)
