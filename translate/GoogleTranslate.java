@@ -20,7 +20,6 @@ public class GoogleTranslate {
 	public static PrintWriter writer;
 	public static void main(String args[]) throws InterruptedException, IOException, URISyntaxException {
 
-		//reusing driver (chrome session)
 		System.setProperty("webdriver.chrome.driver", "/Users/mahmoudel-haj/Downloads/chromedriver");
 		WebDriver driver = new ChromeDriver();
 		driver.get("https://translate.google.com/");
