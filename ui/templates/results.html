@@ -2,4 +2,18 @@
 {% block body %}
 <!doctype html>
 <h1>URI: {{ uri }}</h1>
+<!-- Nav tabs -->
+<div>
+  <ul class="nav nav-tabs" role="tablist">
+  {% for article in articles %}
+    <li role="presentation"><a href="#{{article}}" aria-controls="{{entry}}" role="tab" data-toggle="tab">{{entry}}</a></li>
+  {% endfor %}
+  <!-- Tab panes -->
+  <div class="tab-content">
+    {% for article in articles %}
+      <div role="tabpanel" class="tab-pane" id="{{article}}">uri = {{articles[article][0]}} and sim = {{articles[article][1]}}</div>
+    {% endfor %}
+  </div>
+  </ul>
+</div>
 {% endblock %}
