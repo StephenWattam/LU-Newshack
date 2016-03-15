@@ -10,9 +10,12 @@ CANDY_HEADERS = {
   'Accept' => 'application/json'
 }
 
-CANDY_ENDPOINT = "http://content-api-a127.api.bbci.co.uk/asset/news/"
-CATEGORIES = {:en => %w{world uk world/africa world/europe world/asia world/australia world/latin_america world/middle_east world/us_and_canada technology business football},
-              :ar => %w{}
+CANDY_ENDPOINT = "http://content-api-a127.api.bbci.co.uk/asset/"
+CATEGORIES = {:en => %w{news/world news/uk news/world/africa news/world/europe news/world/asia news/world/australia news/world/latin_america news/world/middle_east news/world/us_and_canada news/technology news/business sport/football},
+              :ar => %w{arabic/sports arabic/middleeast arabic/worldnews arabic/business arabic/artandculture arabic/topics/magazine},
+              :es => %w{mundo/temas/america_latina mundo/temas/internacional mundo/temas/economia mundo/temas/tecnologia mundo/temas/ciencia mundo/temas/salud mundo/temas/cultura mundo/temas/deportes},
+              :zh => %w{zhongwen/simp/world zhongwen/simp/chinese_news zhongwen/simp/uk zhongwen/simp/indepth zhongwen/simp/science zhongwen/simp/business},
+              :pt => %w{portuguese/topicos/brasil portuguese/topicos/internacional portuguese/topicos/economia portuguese/topicos/saude portuguese/topicos/ciencia_e_tecnologia portuguese/topicos/aprenda_ingles portuguese/topicos/salasocial}
 }
 
 require 'rest-client'
@@ -59,6 +62,7 @@ CATEGORIES.each do |language, cats|
     puts "Category: #{cat}"
 
     endpoint = "#{CANDY_ENDPOINT}#{cat}?api_key=#{CANDY_API_KEY}"
+    # warn "DEBUG: #{endpoint}"
     res = RestClient::Request.execute(method: :get,
                                          url: endpoint,
                                          headers: CANDY_HEADERS)
@@ -68,21 +72,56 @@ CATEGORIES.each do |language, cats|
 
     
     stubs[language] ||= {}
-    stubs[language][cats] ||= []
+    stubs[language][cat] ||= []
     (res['results'] || []).each do |r|
-      stubs[language][cats] += parse_result(r)
+      stubs[language][cat] += r.find_key("assetUri")
     end
 
-    puts "Total for #{language}, #{cats} => #{stubs[language][cats].length}"
+    puts "Total for #{language}, #{cat} => #{stubs[language][cat].length}"
 
   end
 
 end
 
-# rq = Request.new(CANDY_ENDPOINT)
-
-# , {:params => {:id => 50, 'foo' => 'bar'}}
 
 
+
+# Fetch pages
+stubs.each do |lang, cats|
+  puts "\n==> LANG: #{lang}"
+
+  cats.each do |cat, sts|
+    puts "Category: #{cat}"
+
+    articles = {}
+    sts.each_with_index do |stub, i|
+
+      puts " #{i}/#{sts.length} #{stub}..."
+
+      begin
+        endpoint = "#{CANDY_ENDPOINT}#{stub}?api_key=#{CANDY_API_KEY}"
+        # warn "DEBUG: #{endpoint}"
+        res = RestClient::Request.execute(method: :get,
+                                          url: endpoint,
+                                          headers: CANDY_HEADERS)
+
+
+        res = JSON.parse(res)
+        article = res['results'].first
+      rescue Exception
+      end
+
+      articles[stub] = article
+    end
+
+    stubs[lang][cat] = articles
+
+  end
+end
+
+
+File.open("out.json", 'w') do |io|
+  io.write(JSON.dump(stubs))
+end
 
 
