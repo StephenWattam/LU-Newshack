@@ -9,6 +9,8 @@ def anysim(dict1, dict2):
     #print(type(a[0]['named_entities']))
     #dict1 = a[0]['named_entities']
     #dict2 = a[0]['named_entities']
+    if len(dict1) == 0 or len(dict2) == 0:
+      return 0.0
     list_of_values = []
     for key in dict1:
         if key in dict2:
