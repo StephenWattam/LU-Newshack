@@ -1,9 +1,12 @@
-package translate;
 
 
-import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
@@ -12,51 +15,59 @@ import org.openqa.selenium.chrome.ChromeDriver;
 
 public class GoogleTranslate {
 
-    	private static String toTranslate = "";
 
-    	public static PrintWriter writer;
+	private static String toTranslate = "";
+	public static PrintWriter writer;
+	public static void main(String args[]) throws InterruptedException, IOException, URISyntaxException {
 
-    public static void main(String args[]) throws InterruptedException, FileNotFoundException{
-
-    	toTranslate = "Hello World";
-			    List<WebElement> elements = translateGoogle(toTranslate);
-			
-    }	 
-	
-	
-	
-	public static  List<WebElement> translateGoogle(String query) throws InterruptedException {
-		List<WebElement> findElements = null;
-		try{
-		  // Optional, if not specified, WebDriver will search your path for chromedriver.
+		//reusing driver (chrome session)
 		System.setProperty("webdriver.chrome.driver", "/Users/mahmoudel-haj/Downloads/chromedriver");
-		
-		// Use a browser profile to avoid being detected by google.
-		//ProfilesIni allProfiles = new ProfilesIni();
-		//WebDriver driver = new ChromeDriver(allProfiles.getProfile("default"));
 		WebDriver driver = new ChromeDriver();
-	   // WebDriver driver = new FirefoxDriver();
-		// WebDriver driver = new ChromeDriver();
 		driver.get("https://translate.google.com/");
-	       
-	    WebElement element = driver.findElement(By.name("text"));
-	   JavascriptExecutor executor = (JavascriptExecutor)driver;
-	    
-	    element.sendKeys(query); // send also a "\n"
-	    
 
-		   driver.findElement(By.xpath("//*[@value='ar']")).click();
-		    
-		    element.submit();
+		   File dir = new File("/Users/mahmoudel-haj/Documents/TranslateFiles");       
+		   if(dir.isDirectory()){
+		   	  for (File child : dir.listFiles()) {
+		   	  System.out.println(child);
+		    	 String text = new String(Files.readAllBytes(Paths.get(""+child)), StandardCharsets.UTF_8);
+				   System.out.println(text);
+				   toTranslate = text;
+				   System.out.println(translateGoogle(toTranslate, driver));
+		   	  }
 
-	    String output = driver.findElement(By.id("result_box")).getText();
-	    //System.out.println(output);
-	    System.out.println(output);
-	   // driver.close();
-}
-catch(Exception e){System.err.println("Error caught " + e);}
-	    
-		return findElements;
+		   }
+		   
+		  
+			//List<WebElement> elements = translateGoogle(toTranslate);
+			
 	}
-	
+
+	public static String translateGoogle(String query, WebDriver driver) throws InterruptedException {
+String translation = "";
+
+try {
+
+
+
+			WebElement element = driver.findElement(By.name("text"));
+			JavascriptExecutor executor = (JavascriptExecutor) driver;
+
+			element.sendKeys(query); // send also a "\n"
+
+			driver.findElement(By.xpath("//*[@value='en']")).click();
+			
+
+			element.submit();
+			Thread.sleep(200);
+			translation = driver.findElement(By.id("result_box")).getText();
+			System.out.println("--> " + translation);
+			Thread.sleep(200);
+		    
+		} catch (Exception e) {
+			System.err.println("Error caught " + e);
+		}
+
+		return translation;
+	}
+
 }
