@@ -1,5 +1,8 @@
 from socket import *
 import json
+import subprocess
+import os
+import sys
 
 PORT=1234
 HOST='localhost'
@@ -64,6 +67,20 @@ def slashTags_parse_entities(tagged_text):
   return entities
 
 
+def get_pos(text):
+  origWD = os.getcwd()
+  if 'stanford-postagger' not in sys.path[0]:
+    os.chdir(os.path.join(os.path.abspath(sys.path[0]), 'stanford-postagger-2015-12-09'))
+  tempfile = open("tempfile", 'w')
+  tempfile.write(text)
+  tempfile.close()
+  stdoutdata = subprocess.check_output(['./stanford-postagger.sh models/english-bidirectional-distsim.tagger tempfile'], shell=True)
+  outtext = stdoutdata.decode('utf-8')
+  outtext = [tuple(word.split('_')) for word in outtext.split()]
+  os.chdir(origWD)
+  return outtext
+
+
 def process(rawfilename, outfilename):
   """ Extract desired features from the output file
   produced by the download/translate process, and
@@ -76,9 +93,12 @@ def process(rawfilename, outfilename):
   languages = rawdata
   for lang in languages:
     for cat in languages[lang]:
+      print("Category: "+cat)
       for uri in languages[lang][cat]:
+          print("URI: "+uri)
           result = languages[lang][cat][uri]
           if not result or not 'summary' in result:
+            print("Skipping")
             continue
           text = result['summary']
           time = result['firstCreated']
@@ -91,7 +111,7 @@ def process(rawfilename, outfilename):
                 for iid in iids:
                   imgdata = result['media']['images'][key][iid]
                   if 'altText' in imgdata:
-                    text += imgdata['altText']
+                    text += ' ' + imgdata['altText']
                   if 'href' in imgdata:
                     imgids.append(imgdata['href'])
 
@@ -104,10 +124,20 @@ def process(rawfilename, outfilename):
                       vidids.append(viddata['href'])
                   if 'image' in viddata:
                     if 'altText' in viddata['image']:
-                      text += viddata['image']['altText']
+                      text += ' '  + viddata['image']['altText']
                     if 'href' in viddata['image']:
                       vidids.append(viddata['image']['href'])
 
+          verbs = []
+          print(text)
+          try:
+            pos_text = get_pos(text)
+          except Exception as e:
+            print(e)
+            pos_text = []
+          for string, tag in pos_text:
+            if 'VB' in tag:
+              verbs.append(string)
             
           nes =  getEntities(text)
           fmap = {
@@ -115,10 +145,8 @@ def process(rawfilename, outfilename):
             "lang" : lang, 
             "named_entities": nes,
             "time_created": time,
-            "image_ids" : list(set(imgids)),
-            "video_ids" : list(set(vidids))
+            "verbs" : list(set(verbs))
           }
           featurevector += [fmap]
 
   json.dump(featurevector, of)
-

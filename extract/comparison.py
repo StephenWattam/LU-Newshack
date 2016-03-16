@@ -38,7 +38,10 @@ def get_candidate_pairs(featurelist):
   #add all same-date pairs which are of a different language
   candidates = []
   for datestr in dateblocks:
+    print(datestr)
     for aii, aij in itertools.combinations(dateblocks[datestr],2):
+      print(aii['lang'])
+      print(aij['lang'])
       if aii['lang'] != aij['lang']:
         candidates.append((aii, aij))
   return candidates
@@ -47,16 +50,17 @@ def get_candidate_pairs(featurelist):
 #Similarity Sum (simple standard method for thresholding)
 def similarity(articleone, articletwo):
   nesim = anysim.anysim(articleone['named_entities'], articletwo['named_entities'])
-  imsim = setsim(articleone['image_ids'], articletwo['image_ids'])
-  visim = setsim(articleone['video_ids'], articletwo['video_ids'])
+  vesim = setsim(articleone['verbs'], articletwo['verbs'])
   tisim = timesim(articleone['time_created'], articletwo['time_created'])
-  sim_vec = [nesim, imsim, visim, tisim]
+  sim_vec = [nesim, vesim, tisim]
+  print(sim_vec)
   return sum(sim_vec)
 
 
 def compare(featureslist):
   #block the list by data
   candidate_pairs = get_candidate_pairs(featureslist)
+  print(len(candidate_pairs))
   #calculate similarity
   similarities = [similarity(cp[0], cp[1]) for cp in candidate_pairs]
   return zip(similarities, candidate_pairs)
@@ -84,12 +88,11 @@ def matches(articlefile, threshold):
         matches[ur2].append(p1)
       else:
         matches[ur2] = [p1]
-
   return matches
+
 
 def output(matches, filename):
   json.dump(matches, open(filename,'w'))
 
-m = matches('rereout.json', 0.9)
-
+m = matches('stevedup.json', 0.0)
 output(m, 'thing.json')
