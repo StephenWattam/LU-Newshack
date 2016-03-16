@@ -28,9 +28,9 @@ def go():
     # Remove the first bit from the URI if it starts with BBC
     # print(" => ", uri)
     if re.match('^http:\/\/bbc\.co\.uk\/', uri):
-        uri = uri[16:-1]
+        uri = uri[16:]
     if re.match('^http:\/\/www\.bbc\.co\.uk\/', uri):
-        uri = uri[20:-1]
+        uri = uri[20:]
     # print(" => ", uri)
 
     # Find the article if you csn
