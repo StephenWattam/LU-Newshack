@@ -13,13 +13,15 @@ def setsim(imgl1, imgl2):
   s2 = set(imgl2)
   if len(s1) == 0 or len(s2) == 0:
     return 0
-  return len(s1.intersection(s2))/len(s1.union(s2))
+  common = len(s1.intersection(s2))
+  alll = len(s1.union(s2))
+  return (float(common)/float(alll))
 
 
 def timesim(tstr1, tstr2):
-  datestring = "%Y-%m-%dT%H:%M:%S+00:00"
-  t1 = datetime.datetime.strptime(tstr1, datestring)
-  t2 = datetime.datetime.strptime(tstr2, datestring)
+  datestring = "%Y-%m-%dT%H:%M:%S"
+  t1 = datetime.datetime.strptime(tstr1[:-6], datestring)
+  t2 = datetime.datetime.strptime(tstr2[:-6], datestring)
   delta = t1 - t2
   denom = datetime.timedelta(days=1).total_seconds()
   return 1-(abs(delta.total_seconds())/86400)
@@ -38,10 +40,7 @@ def get_candidate_pairs(featurelist):
   #add all same-date pairs which are of a different language
   candidates = []
   for datestr in dateblocks:
-    print(datestr)
     for aii, aij in itertools.combinations(dateblocks[datestr],2):
-      print(aii['lang'])
-      print(aij['lang'])
       if aii['lang'] != aij['lang']:
         candidates.append((aii, aij))
   return candidates
@@ -49,12 +48,28 @@ def get_candidate_pairs(featurelist):
 
 #Similarity Sum (simple standard method for thresholding)
 def similarity(articleone, articletwo):
-  nesim = anysim.anysim(articleone['named_entities'], articletwo['named_entities'])
+  print("--Comparison--")
+  print(articleone['named_entities']) 
+  print(articletwo['named_entities'])
+  try:
+    nesim = anysim.anysim(articleone['named_entities'], articletwo['named_entities'])
+  except Exception:
+    print("Encoding Error")
+    nesim = 0
+  print(nesim)
+  print("--")
+#  print(articleone['verbs']) 
+#  print(articletwo['verbs'])
   vesim = setsim(articleone['verbs'], articletwo['verbs'])
+  print(vesim)
+  print("--")
   tisim = timesim(articleone['time_created'], articletwo['time_created'])
   sim_vec = [nesim, vesim, tisim]
+  weights = [1, 1, 0.2]
   print(sim_vec)
-  return sum(sim_vec)
+  weighted = [weights[i]*sim_vec[i] for i in range(0, len(weights))]
+  print(weighted)
+  return sum(weighted)
 
 
 def compare(featureslist):
@@ -94,5 +109,6 @@ def matches(articlefile, threshold):
 def output(matches, filename):
   json.dump(matches, open(filename,'w'))
 
-m = matches('stevedup.json', 0.0)
-output(m, 'thing.json')
+m = matches('translated_features.json', 0.4)
+output(m, 'actual_data.json')
+

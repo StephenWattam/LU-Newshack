@@ -72,11 +72,14 @@ def get_pos(text):
   if 'stanford-postagger' not in sys.path[0]:
     os.chdir(os.path.join(os.path.abspath(sys.path[0]), 'stanford-postagger-2015-12-09'))
   tempfile = open("tempfile", 'w')
-  tempfile.write(text)
+  tempfile.write(text.encode('utf-8'))
   tempfile.close()
-  stdoutdata = subprocess.check_output(['./stanford-postagger.sh models/english-bidirectional-distsim.tagger tempfile'], shell=True)
-  outtext = stdoutdata.decode('utf-8')
-  outtext = [tuple(word.split('_')) for word in outtext.split()]
+  try:
+    stdoutdata = subprocess.check_output(['./stanford-postagger.sh models/english-bidirectional-distsim.tagger tempfile'], shell=True)
+    outtext = stdoutdata.decode('utf-8')
+  except Exception as e:
+    outtext = ""
+  outtext = [tuple([word[0:word.index('_')], word[word.index('_')+1:]]) for word in outtext.split()]
   os.chdir(origWD)
   return outtext
 
@@ -92,12 +95,14 @@ def process(rawfilename, outfilename):
 
   languages = rawdata
   for lang in languages:
+    if lang == 'zh':
+      continue
     for cat in languages[lang]:
       print("Category: "+cat)
       for uri in languages[lang][cat]:
           print("URI: "+uri)
           result = languages[lang][cat][uri]
-          if not result or not 'summary' in result:
+          if not result or not 'summary' in result or not 'the' in result['summary']:
             print("Skipping")
             continue
           text = result['summary']
@@ -130,11 +135,7 @@ def process(rawfilename, outfilename):
 
           verbs = []
           print(text)
-          try:
-            pos_text = get_pos(text)
-          except Exception as e:
-            print(e)
-            pos_text = []
+          pos_text = get_pos(text)
           for string, tag in pos_text:
             if 'VB' in tag:
               verbs.append(string)
@@ -150,3 +151,8 @@ def process(rawfilename, outfilename):
           featurevector += [fmap]
 
   json.dump(featurevector, of)
+
+
+#print(get_pos("Hello my name is jolly gosh wow, where am I?"))
+#print(get_pos("Hello my name is jolly gosh wow, where am I? File_"))
+process('translatedArabic2.json', 'translated_features.json')
