@@ -65,6 +65,7 @@ def go():
 def convert_xml(article):
     str = article["body"]
     str = str.replace("<paragraph", "<p").replace("</paragraph", "</p")
+    # str = re.sub('<image
 
     article["body_html"] = str
     return article
