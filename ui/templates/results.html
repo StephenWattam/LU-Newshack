@@ -53,34 +53,57 @@
 <div>
   <ul class="nav nav-tabs" role="tablist">
   {% for article in articles %}
-    <li role="presentation"><a href="#{{article}}" aria-controls="{{article}}" role="tab" data-toggle="tab">{{article}}</a></li>
+    {% if article == articles.keys()[0] %}
+      <li role="presentation"><a href="#{{article}}" class="active" aria-controls="{{article}}" role="tab" data-toggle="tab">{{article}}, {{'%0.2f'| format(articles[article][1]*100)}}</a></li>
+    {% else %}
+      <li role="presentation"><a href="#{{article}}" aria-controls="{{article}}" role="tab" data-toggle="tab">{{article}}, {{'%0.2f'| format(articles[article][1]*100)}}</a></li>
+    {% endif %}
   {% endfor %}
   </ul>
   <!-- Tab panes -->
   <div class="tab-content">
     {% for article in articles %}
-      <div role="tabpanel" class="tab-pane" id="{{article}}">
-      {% if articles[article][2] == None %}
-        <h1>No data</h1>
+      {% if article == articles.keys()[0] %}
+        <div role="tabpanel" class="tab-pane active" id="{{article}}">
+        {% if articles[article][2] == None %}
+          <h1>No data</h1>
+        {% else %}
+            <h1>Summary</h1>
+            <p>{{articles[article][2].summary}}</p>
+            <h1>Article</h1>
+            {% if article == 'ar' %}
+              <p dir="rtl">{{articles[article][2].body|safe}}</p>
+            {% else %}
+              <p>{{articles[article][2].body|safe}}</p>
+            {% endif %}
+            <h1>Date time</h1>
+            <p>{{articles[article][2].lastUpdated}}</p>
+            <h1>URI</h1>
+            <a href="http://bbc.co.uk{{articles[article][0]}}">Link</a>
+        {% endif %}
+        </div>
       {% else %}
-          <h1>Summary</h1>
-          <p>{{articles[article][2].summary}}</p>
-          <h1>Article</h1>
-          {% if article == 'ar' %}
-            <p dir="rtl">{{articles[article][2].body|safe}}</p>
+        <div role="tabpanel" class="tab-pane" id="{{article}}">
+        {% if articles[article][2] == None %}
+          <h1>No data</h1>
           {% else %}
-            <p>{{articles[article][2].body|safe}}</p>
-          {% endif %}
-          <h1>Date time</h1>
-          <p>{{articles[article][2].lastUpdated}}</p>
-          <h1>URI</h1>
-          <a href="http://bbc.co.uk{{articles[article][0]}}">Link</a>
-          <h1>Similarity</h1>
-          <p>{{articles[article][1]}}</p>
+              <h1>Summary</h1>
+              <p>{{articles[article][2].summary}}</p>
+              <h1>Article</h1>
+              {% if article == 'ar' %}
+                <p dir="rtl">{{articles[article][2].body|safe}}</p>
+              {% else %}
+                <p>{{articles[article][2].body|safe}}</p>
+              {% endif %}
+              <h1>Date time</h1>
+              <p>{{articles[article][2].lastUpdated}}</p>
+              <h1>URI</h1>
+              <a href="http://bbc.co.uk{{articles[article][0]}}">Link</a>
+        {% endif %}
+        </div>
       {% endif %}
-      </div>
     {% endfor %}
-  </div>
+
 
 </div>
 {% endblock %}
