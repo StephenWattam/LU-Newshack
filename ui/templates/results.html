@@ -59,6 +59,19 @@
       <li role="presentation"><a href="#{{article}}" aria-controls="{{article}}" role="tab" data-toggle="tab">{{article}}, {{'%0.2f'| format(articles[article][1]*33.33)}}</a></li>
     {% endif %}
   {% endfor %}
+  <li>
+    <div class="dropdown">
+      <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+        Original articles
+        <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+        {% for article in articles %}
+          <li><a href="http://bbc.co.uk{{articles[article][0]}}">{{article}}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </li>
   </ul>
   <!-- Tab panes -->
   <div class="tab-content">
