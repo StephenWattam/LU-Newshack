@@ -84,13 +84,12 @@
             <h1>Summary</h1>
             <p>{{articles[article][2].summary}}</p>
             <h1>Article</h1>
+            <p>Last created {{articles[article][2].lastUpdated}}</p>
             {% if article == 'ar' %}
               <p dir="rtl">{{articles[article][2].body|safe}}</p>
             {% else %}
               <p>{{articles[article][2].body|safe}}</p>
             {% endif %}
-            <h1>Date time</h1>
-            <p>{{articles[article][2].lastUpdated}}</p>
         {% endif %}
         </div>
       {% else %}
@@ -101,13 +100,12 @@
               <h1>Summary</h1>
               <p>{{articles[article][2].summary}}</p>
               <h1>Article</h1>
+              <p>Last created {{articles[article][2].lastUpdated}}</p>
               {% if article == 'ar' %}
                 <p dir="rtl">{{articles[article][2].body|safe}}</p>
               {% else %}
                 <p>{{articles[article][2].body|safe}}</p>
               {% endif %}
-              <h1>Date time</h1>
-              <p>{{articles[article][2].lastUpdated}}</p>
         {% endif %}
         </div>
       {% endif %}
