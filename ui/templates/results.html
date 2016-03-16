@@ -54,9 +54,9 @@
   <ul class="nav nav-tabs" role="tablist">
   {% for article in articles %}
     {% if article == articles.keys()[0] %}
-      <li role="presentation"><a href="#{{article}}" class="active" aria-controls="{{article}}" role="tab" data-toggle="tab">{{article}}, {{'%0.2f'| format(articles[article][1]*100)}}</a></li>
+      <li role="presentation"><a href="#{{article}}" class="active" aria-controls="{{article}}" role="tab" data-toggle="tab">{{article}}, {{'%0.2f'| format(articles[article][1]*33.33)}}</a></li>
     {% else %}
-      <li role="presentation"><a href="#{{article}}" aria-controls="{{article}}" role="tab" data-toggle="tab">{{article}}, {{'%0.2f'| format(articles[article][1]*100)}}</a></li>
+      <li role="presentation"><a href="#{{article}}" aria-controls="{{article}}" role="tab" data-toggle="tab">{{article}}, {{'%0.2f'| format(articles[article][1]*33.33)}}</a></li>
     {% endif %}
   {% endfor %}
   </ul>
