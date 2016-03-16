@@ -47,20 +47,19 @@ def go():
         articleuri, sim = sorted_list[0]
         languages[language] = (articleuri, sim, search.find_article_in_list(articles, articleuri))
     all_pictures = set()
-    for article in languages:
-        if languages[article][2] == None:
+    for lang in languages:
+        if languages[lang][2] == None:
             pass
         else:
-            for media_items in languages[article][2]['media']['images']:
-                for images in languages[article][2]['media']['images'][media_items]:
-                    if languages[article][2]['media']['images'][media_items][images]['href'] != "http://":
-                        picture = languages[article][2]['media']['images'][media_items][images]
+            print(languages[lang][2])
+            for media_items in languages[lang][2]['media']['images']:
+                for images in languages[lang][2]['media']['images'][media_items]:
+                    if languages[lang][2]['media']['images'][media_items][images]['href'] != "http://":
+                        picture = languages[lang][2]['media']['images'][media_items][images]
                         all_pictures.add(picture['href'])
 
     another = list(all_pictures)
-    print(type(another))
-    print(another[0])
-    return render_template('results.html', uri = uri, articles = languages, all_pictures = another, length=len(all_pictures))
+    return render_template('results.html', uri = uri, articles = languages, all_pictures = another, length=len(all_pictures), article = article)
 
 # Entry point
 if __name__ == '__main__':
