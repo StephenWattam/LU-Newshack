@@ -57,10 +57,8 @@ try {
 			
 
 			element.submit();
-			Thread.sleep(200);
+			Thread.sleep(2000);
 			translation = driver.findElement(By.id("result_box")).getText();
-			System.out.println("--> " + translation);
-			Thread.sleep(200);
 		    
 		} catch (Exception e) {
 			System.err.println("Error caught " + e);

@@ -43,6 +43,15 @@ div.page-header-banner div.input-group{
     margin: 0 auto;
 }
 
+div.footer {
+    width: 100%;
+    margin-top: 0;
+    padding-top: 1em;
+    padding-bottom: 1em;
+    border-top: solid 1px #aaa;
+    text-align: center;
+}
+
 div.body {
 
     padding: 0.0em;
@@ -53,4 +62,3 @@ div.body {
     margin: 0 auto;
     padding: 0.4em;
 }
-
