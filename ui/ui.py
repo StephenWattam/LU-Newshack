@@ -42,7 +42,7 @@ def go():
         return render_template('missing.html', uri = uri, explanation = 'We can\'t find any matches for that article.')
 
     languages = {}
-    languages[article["language"]] = (article["assetUri"], 1.0, article)
+    languages[article["language"]] = (article["assetUri"], 3.0, article)
     for language, sorted_list in ranked_similarities.items():
         articleuri, sim = sorted_list[0]
         languages[language] = (articleuri, sim, convert_xml(search.find_article_in_list(articles, articleuri)))
