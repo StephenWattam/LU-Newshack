@@ -23,11 +23,15 @@ def hello():
 # Show results
 @app.route('/go', methods=['GET', 'POST'])
 def go():
-    uri = request.args['uri']
+    uri = request.values['uri']
 
     # Remove the first bit from the URI if it starts with BBC
-    if re.match('^https?:\/\/www\.bbc\.co\.uk\/', uri):
-        str = str[20:-1]
+    # print(" => ", uri)
+    if re.match('^http:\/\/bbc\.co\.uk\/', uri):
+        uri = uri[16:-1]
+    if re.match('^http:\/\/www\.bbc\.co\.uk\/', uri):
+        uri = uri[20:-1]
+    # print(" => ", uri)
 
     # Find the article if you csn
     article = search.find_article_in_list(articles, uri)
@@ -51,7 +55,7 @@ def go():
         if languages[lang][2] == None:
             pass
         else:
-            print(languages[lang][2])
+            #print(languages[lang][2])
             for media_items in languages[lang][2]['media']['images']:
                 for images in languages[lang][2]['media']['images'][media_items]:
                     if languages[lang][2]['media']['images'][media_items][images]['href'] != "http://":
