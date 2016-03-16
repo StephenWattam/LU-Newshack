@@ -60,7 +60,7 @@ def go():
     another = list(all_pictures)
     print(type(another))
     print(another[0])
-    return render_template('results.html', uri = uri, articles = languages, all_pictures = all_pictures, length=len(all_pictures))
+    return render_template('results.html', uri = uri, articles = languages, all_pictures = another, length=len(all_pictures))
 
 # Entry point
 if __name__ == '__main__':
