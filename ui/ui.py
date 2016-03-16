@@ -45,7 +45,7 @@ def go():
     languages[article["language"]] = (article["assetUri"], 1.0, article)
     for language, sorted_list in ranked_similarities.items():
         articleuri, sim = sorted_list[0]
-        languages[language] = (articleuri, sim, search.find_article_in_list(articles, articleuri))
+        languages[language] = (articleuri, sim, convert_xml(search.find_article_in_list(articles, articleuri)))
     all_pictures = set()
     for article in languages:
         if languages[article][2] == None:
@@ -61,6 +61,16 @@ def go():
     print(type(another))
     print(another[0])
     return render_template('results.html', uri = uri, articles = languages, all_pictures = another, length=len(all_pictures))
+
+
+def convert_xml(article):
+    str = article["body"]
+    str = str.replace("<paragraph", "<p").replace("</paragraph", "</p")
+
+    article["body_html"] = str
+    return article
+
+
 
 # Entry point
 if __name__ == '__main__':
